@@ -12,4 +12,4 @@ services:
     restart: always
     volumes:
       - ./:/home/node/node_filesystem
-    command: "yarn test"
+    command: "yarn test:watch"

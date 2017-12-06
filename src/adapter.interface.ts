@@ -10,18 +10,15 @@ export interface AdapterInterface extends ReadInterface {
 
   updateStream(path: string, resource: any, config?: any): Promise<any>;
 
-  rename(path: string, newPath: string): Promise<boolean>;
+  rename(path: string, newpath: string): Promise<boolean>;
 
-  copy(path: string, newPath: string): Promise<boolean>;
+  copy(path: string, newpath: string): Promise<boolean>;
 
   delete(path: string): Promise<boolean>;
 
-  deleteDir(path: string): Promise<boolean>;
+  deleteDir(path: string): Promise<any | false>;
 
   createDir(path: string): Promise<boolean>;
 
-  setVisibility(
-    path: string,
-    visibility: 'public' | 'private',
-  ): Promise<any>;
+  setVisibility(path: string, visibility: 'public' | 'private'): Promise<any>;
 }

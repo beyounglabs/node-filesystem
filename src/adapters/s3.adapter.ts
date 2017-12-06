@@ -116,7 +116,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
     });
   }
 
-  public async read(path: string): Promise<any> {
+  public async read(path: string): Promise<any | false> {
     const downloader = this.getClient().downloadBuffer({
       Key: path,
       Bucket: this.getBucket(),
@@ -150,7 +150,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
 
     return new Promise<boolean>(done => {
       const deleter = this.getClient().deleteObjects(params);
-      deleter.on('end', function() {
+      deleter.on('end', () => {
         done(true);
       });
     });
@@ -164,11 +164,11 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
     throw new Error('Not implemented yet');
   }
 
-  public async getMetadata(path: string): Promise<any | false> {
+  public async getMetadata(path: string): Promise<any> {
     throw new Error('Not implemented yet');
   }
 
-  public async getSize(path: string): Promise<any | false> {
+  public async getSize(path: string): Promise<any> {
     throw new Error('Not implemented yet');
   }
 
@@ -208,11 +208,11 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
     throw new Error('Not implemented yet');
   }
 
-  public async rename(path: string, newPath: string): Promise<boolean> {
+  public async rename(path: string, newpath: string): Promise<boolean> {
     throw new Error('Not implemented yet');
   }
 
-  public async copy(path: string, newPath: string): Promise<boolean> {
+  public async copy(path: string, newpath: string): Promise<boolean> {
     throw new Error('Not implemented yet');
   }
 
@@ -220,7 +220,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
     throw new Error('Not implemented yet');
   }
 
-  public async createDir(path: string): Promise<boolean> {
+  public async createDir(path: string): Promise<any | false> {
     throw new Error('Not implemented yet');
   }
 

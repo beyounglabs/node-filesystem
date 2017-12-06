@@ -6,6 +6,8 @@ export class ListContentsResponse {
 
   public timestamp: number;
 
+  public size: number;
+
   public dirname: string;
 
   public basename: string;

@@ -12,9 +12,9 @@ export interface ReadInterface {
     recursive?: boolean,
   ): Promise<ListContentsResponse[]>;
 
-  getMetadata(path: string): Promise<any | false>;
+  getMetadata(path: string): Promise<any>;
 
-  getSize(path: string): Promise<any | false>;
+  getSize(path: string): Promise<any>;
 
   getMimetype(path: string): Promise<any | false>;
 

@@ -1,5 +1,5 @@
 {
-  "watch": ["src"],
+  "watch": ["src", "__tests__"],
   "ext": "ts",
   "exec": "node -r tsconfig-paths/register ./index"
 }
