@@ -1,0 +1,15 @@
+{
+  "defaultSeverity": "error",
+  "extends": "tslint-config-airbnb",
+  "jsRules": {
+    "no-unused-expression": true
+  },
+  "cliOptions": {},
+  "rules": {
+    "max-line-length": [150],
+    "object-shorthand-properties-first": false,
+    "no-parameter-reassignment": false,
+    "member-access": [true],
+    "await-promise": true
+  }
+}

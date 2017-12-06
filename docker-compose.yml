@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  node:
+    hostname: node
+    container_name: node_filesystem
+    image: node:8.9
+    user: node
+    working_dir: /home/node/node_filesystem
+    environment:
+      - NODE_ENV=development
+    restart: always
+    volumes:
+      - ./:/home/node/node_filesystem
+    command: "yarn test"
