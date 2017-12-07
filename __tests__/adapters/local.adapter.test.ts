@@ -1,7 +1,6 @@
-import 'reflect-metadata';
-
 import { expect } from 'chai';
 import { LocalAdapter } from '../../src/adapters/local.adapter';
+
 describe('LocalAdapterTest', function() {
   this.timeout(5000);
 
@@ -19,6 +18,19 @@ describe('LocalAdapterTest', function() {
       expect(await localAdapter.has('test/1.txt')).to.true;
     });
 
+    it('visibility', async () => {
+      let fileVisibility = await localAdapter.getVisibility('test/1.txt');
+      expect(fileVisibility.visibility).to.equals('public');
+
+      await localAdapter.setVisibility('test/1.txt', 'private');
+      fileVisibility = await localAdapter.getVisibility('test/1.txt');
+      expect(fileVisibility.visibility).to.equals('private');
+
+      await localAdapter.setVisibility('test/1.txt', 'public');
+      fileVisibility = await localAdapter.getVisibility('test/1.txt');
+      expect(fileVisibility.visibility).to.equals('public');
+    });
+
     it('copy', async () => {
       await localAdapter.delete('test/2.txt');
       expect(await localAdapter.has('test/2.txt')).to.false;
@@ -34,7 +46,7 @@ describe('LocalAdapterTest', function() {
       expect(metadata.size).to.equals(4);
     });
 
-    it('write', async () => {
+    it('read', async () => {
       const file1Txt = await localAdapter.read('test/1.txt');
       expect(file1Txt.contents).to.equals('test');
       expect(file1Txt.path).to.equals('test/1.txt');
@@ -45,7 +57,7 @@ describe('LocalAdapterTest', function() {
       const files = await localAdapter.listContents('test/');
       expect(files.length).to.equals(2);
       expect(files[0].type).to.equals('file');
-      expect(files[0].path).to.equals('1.txt');
+      expect(files[0].path).to.equals('test/1.txt');
       expect(String(files[0].timestamp).length).to.equals(10);
       expect(files[0].size).to.equals(4);
     });
@@ -88,6 +100,38 @@ describe('LocalAdapterTest', function() {
     it('copy', async () => {
       expect(await localAdapter.copy('test2/test31', 'test2/test32')).to.true;
       expect(await localAdapter.has('test2/test32/test4')).to.true;
+    });
+
+    it('list contents recursive', async () => {
+      await localAdapter.write('test2/test.txt', 'test');
+
+      const recursiveList = await localAdapter.listContents('test2', true);
+
+      expect(recursiveList[0].type).to.equals('file');
+      expect(recursiveList[0].path).to.equals('test2/test.txt');
+
+      expect(recursiveList[1].type).to.equals('dir');
+      expect(recursiveList[1].path).to.equals('test2/test31');
+
+      expect(recursiveList[2].type).to.equals('dir');
+      expect(recursiveList[2].path).to.equals('test2/test31/test4');
+
+      expect(recursiveList[3].type).to.equals('dir');
+      expect(recursiveList[3].path).to.equals('test2/test32');
+
+      expect(recursiveList[4].type).to.equals('dir');
+      expect(recursiveList[4].path).to.equals('test2/test32/test4');
+
+      const list = await localAdapter.listContents('test2/');
+
+      expect(list[0].type).to.equals('file');
+      expect(list[0].path).to.equals('test2/test.txt');
+
+      expect(list[1].type).to.equals('dir');
+      expect(list[1].path).to.equals('test2/test31');
+
+      expect(list[2].type).to.equals('dir');
+      expect(list[2].path).to.equals('test2/test32');
     });
 
     it('delete', async () => {

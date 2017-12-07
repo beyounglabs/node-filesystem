@@ -1,13 +1,10 @@
 import { writeFile } from 'fs';
 import { createClient } from 's3';
 import { promisify } from 'util';
-import * as uid from 'uid';
 
-import * as env from '../../../env';
+import { AdapterInterface } from '../adapter.interface';
 import { ListContentsResponse } from '../response/list.contents.response';
 import { AbstractAdapter } from './abstract.adapter';
-import { NativeAdapter } from './native.adapter';
-import { AdapterInterface } from '../adapter.interface';
 
 const writeFileAsync = promisify(writeFile);
 
@@ -28,6 +25,8 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
     if (client) {
       return client;
     }
+
+    const env: any = {};
 
     client = createClient({
       s3Options: {
@@ -95,7 +94,11 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
     });
   }
 
-  public async write(path: string, contents: string): Promise<any> {
+  public async write(
+    path: string,
+    contents: string,
+    config?: any,
+  ): Promise<any> {
     const s3Params = {
       Body: Buffer.from(contents),
       Key: path,
@@ -220,7 +223,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
     throw new Error('Not implemented yet');
   }
 
-  public async createDir(path: string): Promise<any | false> {
+  public async createDir(path: string, config?: any): Promise<any | false> {
     throw new Error('Not implemented yet');
   }
 

@@ -25,6 +25,6 @@ export abstract class AbstractAdapter {
 
   public removePathPrefix(path: string): string {
     const pathString = String(this.getPathPrefix());
-    return pathString.substr(pathString.length);
+    return path.substr(pathString.length);
   }
 }

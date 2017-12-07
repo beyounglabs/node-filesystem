@@ -18,7 +18,7 @@ export interface AdapterInterface extends ReadInterface {
 
   deleteDir(path: string): Promise<any | false>;
 
-  createDir(path: string): Promise<boolean>;
+  createDir(path: string, config?: any): Promise<boolean>;
 
   setVisibility(path: string, visibility: 'public' | 'private'): Promise<any>;
 }
