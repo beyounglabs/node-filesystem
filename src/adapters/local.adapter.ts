@@ -1,5 +1,5 @@
-import * as Bluebird from 'bluebird';
 import {
+  chmod,
   copy,
   mkdirs,
   move,
@@ -10,13 +10,12 @@ import {
   unlink,
   writeFile,
 } from 'fs-extra';
-import * as recursiveReaddir from 'recursive-readdir';
+import { merge } from 'lodash';
+import { paths } from 'node-dir';
 
 import { AdapterInterface } from '../adapter.interface';
 import { ListContentsResponse } from '../response/list.contents.response';
 import { AbstractAdapter } from './abstract.adapter';
-
-const recursiveReaddirAsync: any = Bluebird.promisify(recursiveReaddir);
 
 export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
   protected permissions: any = {
@@ -29,6 +28,11 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
       private: '0700',
     },
   };
+
+  protected writeFlags?: string;
+
+  protected permissionMap: any;
+
   constructor(
     root: string,
     writeFlags?: string,
@@ -36,11 +40,12 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     permissions: any[] = [],
   ) {
     super();
-    if (permissions) {
-      this.permissions = permissions;
-    }
+
+    this.writeFlags = writeFlags;
+    this.permissionMap = merge(this.permissions, permissions);
     this.setPathPrefix(root);
   }
+
   public async listContents(
     directory: string,
     recursive: boolean = false,
@@ -51,15 +56,35 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
       return [];
     }
 
-    /**
-     * @todo implements recursive
-     */
+    let files: any[] = [];
+    if (!recursive) {
+      files = await readdir(location, 'utf8');
+      files = files.map(file => {
+        return directory + file;
+      });
+    } else {
+      files = await new Promise<any[]>(done => {
+        paths(location, (err, paths) => {
+          const fileList: string[] = [];
+          for (const file of paths.files) {
+            fileList.push(this.removePathPrefix(file));
+          }
 
-    const files = await readdir(location, 'utf8');
+          for (const dir of paths.dirs) {
+            fileList.push(this.removePathPrefix(dir));
+          }
+
+          done(fileList);
+        });
+      });
+    }
+
+    files.sort();
+
     const response: ListContentsResponse[] = [];
 
     for (const file of files) {
-      const fileStat = await stat(location + file);
+      const fileStat = await stat(this.applyPathPrefix(file));
       const isFile = fileStat.isFile();
       const listContentResponse = new ListContentsResponse();
       listContentResponse.type = isFile ? 'file' : 'dir';
@@ -79,21 +104,28 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     config?: any,
   ): Promise<any> {
     const location = this.applyPathPrefix(path);
+    const options: any = {};
 
-    await this.ensureDirectory(this.getDirname(path));
-    await writeFile(location, contents);
+    if (this.writeFlags) {
+      options.flag = this.writeFlags;
+    }
 
-    /**
-     * @todo implements visibility
-     * @todo implements permission
-     */
-    return {
+    await this.ensureDirectory(this.getDirname(location));
+    await writeFile(location, contents, options);
+    const result: any = {
       contents,
       type: 'file',
       size: Buffer.byteLength(contents),
       path,
       visibility: 'public',
     };
+
+    if (config && config.visibility) {
+      result.visibility = config.visibility;
+      await this.setVisibility(path, config.visibility);
+    }
+
+    return result;
   }
 
   public async read(path: string): Promise<any | false> {
@@ -104,6 +136,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     } catch (e) {
       return false;
     }
+
     return {
       type: 'file',
       path,
@@ -161,8 +194,14 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     return await this.getMetadata(path);
   }
 
-  public async getVisibility(path: string): Promise<any | false> {
-    throw new Error('Not implemented yet');
+  public async getVisibility(path: string): Promise<any> {
+    const location: string = this.applyPathPrefix(path);
+    const fileStat = await stat(location);
+    const octal = fileStat.mode.toString(8).substr(-4);
+    const permissions = parseInt(octal, 8);
+    const visibility = permissions & 0o44 ? 'public' : 'private';
+
+    return { path, visibility };
   }
 
   public async writeStream(
@@ -228,14 +267,15 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     return true;
   }
 
-  public async createDir(dirname: string): Promise<any | false> {
+  public async createDir(dirname: string, config?: any): Promise<any | false> {
     const location: string = this.applyPathPrefix(dirname);
+    const visibility =
+      config && config.visibility ? config.visibility : 'public';
     /**
      * @todo implements umask
-     * @todo implements visibility
      */
     try {
-      await mkdirs(location);
+      await mkdirs(location, this.permissionMap['dir'][visibility]);
     } catch (e) {
       return false;
     }
@@ -247,7 +287,16 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     path: string,
     visibility: 'public' | 'private',
   ): Promise<any> {
-    throw new Error('Not implemented yet');
+    const location: string = this.applyPathPrefix(path);
+
+    const type: string = (await this.isDir(location)) ? 'dir' : 'file';
+    try {
+      await chmod(location, this.permissionMap[type][visibility]);
+    } catch (e) {
+      return false;
+    }
+
+    return { path, visibility };
   }
 
   protected async isDir(root: string): Promise<boolean> {
@@ -271,11 +320,10 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     }
 
     /**
-     * @todo implements permission
      * @todo implements umask
      */
 
-    await mkdirs(root);
+    await mkdirs(root, this.permissionMap['dir']['public']);
 
     if (!await this.isDir(root)) {
       throw new Error(`Impossible to create the root directory "${root}".`);

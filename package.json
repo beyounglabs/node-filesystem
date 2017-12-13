@@ -8,17 +8,19 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "test": "nyc mocha -A --opts ./mocha.opts --require ts-node/register -r tsconfig-paths/register",
+    "test":
+      "nyc mocha -A --opts ./mocha.opts --require ts-node/register -r tsconfig-paths/register",
     "test:clear": "clear &&  yarn test",
     "test:watch": "nodemon --exec yarn test:clear",
-    "npm:publish": "yarn build && cp package.json dist/ && cd dist/ && npm publish",
+    "npm:publish":
+      "yarn build && cp package.json dist/ && cd dist/ && npm publish",
     "coverage": "cd coverage && python -m SimpleHTTPServer 8182"
   },
   "dependencies": {
-    "bluebird": "^3.5.1",
     "fs-extra": "^4.0.3",
+    "lodash": "^4.17.4",
     "ltrim": "^1.0.0",
-    "recursive-readdir": "^2.2.1",
+    "node-dir": "^0.1.17",
     "rtrim": "^1.0.0",
     "s3": "^4.4.0",
     "uid": "^0.0.2"
@@ -40,21 +42,10 @@
     "typescript": "^2.6.1"
   },
   "nyc": {
-    "include": [
-      "src/*.ts",
-      "src/**/*.ts"
-    ],
-    "exclude": [
-      "docker"
-    ],
-    "extension": [
-      ".ts"
-    ],
-    "reporter": [
-      "html",
-      "lcovonly",
-      "text-summary"
-    ],
+    "include": ["src/*.ts", "src/**/*.ts"],
+    "exclude": ["docker"],
+    "extension": [".ts"],
+    "reporter": ["html", "lcovonly", "text-summary"],
     "all": true
   }
 }
