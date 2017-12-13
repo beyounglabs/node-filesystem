@@ -4,7 +4,7 @@ import { LocalAdapter } from '../../src/adapters/local.adapter';
 describe('LocalAdapterTest', function() {
   this.timeout(5000);
 
-  const adapter = new LocalAdapter(__dirname + '/data');
+  const adapter = new LocalAdapter(__dirname + '/data/../data');
 
   describe('files', () => {
     it('write', async () => {

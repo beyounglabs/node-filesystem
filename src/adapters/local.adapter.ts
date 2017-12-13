@@ -12,6 +12,7 @@ import {
 } from 'fs-extra';
 import { merge } from 'lodash';
 import { paths } from 'node-dir';
+import { normalize } from 'path';
 import * as rtrim from 'rtrim';
 
 import { AdapterInterface } from '../adapter.interface';
@@ -45,7 +46,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
 
     this.writeFlags = writeFlags;
     this.permissionMap = merge(this.permissions, permissions);
-    this.setPathPrefix(root);
+    this.setPathPrefix(normalize(root));
   }
 
   public async listContents(

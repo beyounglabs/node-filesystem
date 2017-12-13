@@ -1,6 +1,6 @@
 {
   "name": "node-filesystem",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A node filesystem manager",
   "main": "index.js",
   "repository": "git@github.com:beautybrands/node-queue-manager.git",
