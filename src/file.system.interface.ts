@@ -22,13 +22,13 @@ export interface AdapterInterface {
 
   getVisibility(path: string): Promise<'public' | 'private' | false>;
 
-  write(path: string, content: string, config?: any[]): Promise<boolean>;
+  write(path: string, content: string, config?: any): Promise<boolean>;
 
-  writeStream(path: string, resource: any, config?: any[]): Promise<boolean>;
+  writeStream(path: string, resource: any, config?: any): Promise<boolean>;
 
-  update(path: string, content: string, config?: any[]): Promise<boolean>;
+  update(path: string, content: string, config?: any): Promise<boolean>;
 
-  updateStream(path: string, resource: any, config?: any[]): Promise<boolean>;
+  updateStream(path: string, resource: any, config?: any): Promise<boolean>;
 
   rename(path: string, newPath: string): Promise<boolean>;
 
@@ -45,9 +45,9 @@ export interface AdapterInterface {
     visibility: 'public' | 'private',
   ): Promise<boolean>;
 
-  put(path: string, content: string, config?: any[]): Promise<boolean>;
+  put(path: string, content: string, config?: any): Promise<boolean>;
 
-  putStream(path: string, resource: any, config?: any[]): Promise<boolean>;
+  putStream(path: string, resource: any, config?: any): Promise<boolean>;
 
   readAndDelete(path: string): Promise<string>;
 }

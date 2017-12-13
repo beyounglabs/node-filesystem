@@ -1,6 +1,6 @@
 {
   "name": "node-filesystem",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "A node filesystem manager",
   "main": "index.js",
   "repository": "git@github.com:beautybrands/node-queue-manager.git",
@@ -24,8 +24,7 @@
     "ltrim": "^1.0.0",
     "node-dir": "^0.1.17",
     "rtrim": "^1.0.0",
-    "s3": "^4.4.0",
-    "uid": "^0.0.2"
+    "s3": "^4.4.0"
   },
   "devDependencies": {
     "@types/bull": "^3.3.0",
