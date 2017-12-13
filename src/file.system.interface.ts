@@ -1,4 +1,4 @@
-import { ListContentsResponse } from '../response/list.contents.response';
+import { ListContentsResponse } from './response/list.contents.response';
 
 export interface AdapterInterface {
   has(path: string): Promise<boolean>;
