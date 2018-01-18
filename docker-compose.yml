@@ -10,7 +10,6 @@ services:
     environment:
       - NODE_ENV=development
       - TERM=xterm
-    restart: always
     volumes:
       - ./:/home/node/node_filesystem
     command: "yarn test:watch"
