@@ -12,9 +12,12 @@ import {
 } from 'fs-extra';
 import { merge } from 'lodash';
 import { paths } from 'node-dir';
+import { normalize } from 'path';
+import * as rtrim from 'rtrim';
 
 import { AdapterInterface } from '../adapter.interface';
 import { ListContentsResponse } from '../response/list.contents.response';
+import { UtilHelper } from '../util.helper';
 import { AbstractAdapter } from './abstract.adapter';
 
 export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
@@ -43,7 +46,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
 
     this.writeFlags = writeFlags;
     this.permissionMap = merge(this.permissions, permissions);
-    this.setPathPrefix(root);
+    this.setPathPrefix(normalize(root));
   }
 
   public async listContents(
@@ -60,18 +63,18 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     if (!recursive) {
       files = await readdir(location, 'utf8');
       files = files.map(file => {
-        return directory + file;
+        return location + file;
       });
     } else {
       files = await new Promise<any[]>(done => {
         paths(location, (err, paths) => {
           const fileList: string[] = [];
           for (const file of paths.files) {
-            fileList.push(this.removePathPrefix(file));
+            fileList.push(file);
           }
 
           for (const dir of paths.dirs) {
-            fileList.push(this.removePathPrefix(dir));
+            fileList.push(dir);
           }
 
           done(fileList);
@@ -84,24 +87,40 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     const response: ListContentsResponse[] = [];
 
     for (const file of files) {
-      const fileStat = await stat(this.applyPathPrefix(file));
-      const isFile = fileStat.isFile();
-      const listContentResponse = new ListContentsResponse();
-      listContentResponse.type = isFile ? 'file' : 'dir';
-      listContentResponse.path = file;
-      listContentResponse.size = fileStat.size;
-      listContentResponse.timestamp = Math.round(fileStat.mtimeMs / 1000);
-
-      response.push(listContentResponse);
+      response.push(await this.normalizeResponse({ path: file }, ''));
     }
 
     return response;
   }
 
+  protected async normalizeResponse(response: any, path: string): Promise<any> {
+    let result: any = {
+      path: path ? path : this.removePathPrefix(response.path),
+    };
+
+    result = { ...result, ...UtilHelper.pathinfo(result.path) };
+
+    const fileStat = await stat(this.applyPathPrefix(result.path));
+    const isFile = fileStat.isFile();
+    result.type = isFile ? 'file' : 'dir';
+    result.size = fileStat.size;
+    result.timestamp = Math.round(fileStat.mtimeMs / 1000);
+
+    if (result.type === 'dir') {
+      result.path = rtrim(result.path, '/');
+
+      return result;
+    }
+
+    result.type = 'file';
+
+    return result;
+  }
+
   public async write(
     path: string,
     contents: string,
-    config?: any,
+    config: any = {},
   ): Promise<any> {
     const location = this.applyPathPrefix(path);
     const options: any = {};
@@ -120,9 +139,8 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
       visibility: 'public',
     };
 
-    if (config && config.visibility) {
+    if (config.visibility) {
       result.visibility = config.visibility;
-      await this.setVisibility(path, config.visibility);
     }
 
     return result;
@@ -207,7 +225,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
   public async writeStream(
     path: string,
     resource: any,
-    config?: any,
+    config: any = {},
   ): Promise<any> {
     throw new Error('Not implemented yet');
   }
@@ -215,7 +233,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
   public async update(
     path: string,
     contents: string,
-    config?: any,
+    config: any = {},
   ): Promise<any> {
     return await this.write(path, contents, config);
   }
@@ -223,7 +241,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
   public async updateStream(
     path: string,
     resource: any,
-    config?: any,
+    config: any = {},
   ): Promise<any> {
     throw new Error('Not implemented yet');
   }
@@ -267,10 +285,12 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     return true;
   }
 
-  public async createDir(dirname: string, config?: any): Promise<any | false> {
+  public async createDir(
+    dirname: string,
+    config: any = {},
+  ): Promise<any | false> {
     const location: string = this.applyPathPrefix(dirname);
-    const visibility =
-      config && config.visibility ? config.visibility : 'public';
+    const visibility = config.visibility ? config.visibility : 'public';
     /**
      * @todo implements umask
      */
