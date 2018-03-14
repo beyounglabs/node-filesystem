@@ -20,6 +20,10 @@ export abstract class AbstractAdapter {
   }
 
   public applyPathPrefix(path: string): string {
+    if (!this.getPathPrefix()) {
+      return path;
+    }
+
     return this.getPathPrefix() + ltrim(path, '\\/');
   }
 
