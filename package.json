@@ -3,7 +3,7 @@
   "version": "0.0.7",
   "description": "A node filesystem manager",
   "main": "index.js",
-  "repository": "git@github.com:beautybrands/node-queue-manager.git",
+  "repository": "git@github.com:beautybrands/node-filesystem.git",
   "author": "Piero Giusti <pierophp@gmail.com>",
   "license": "MIT",
   "keywords": ["node", "file", "filesystem", "s3", "flysystem"],
