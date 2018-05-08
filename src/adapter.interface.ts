@@ -1,8 +1,7 @@
-import { ListContentsResponse } from './response/list.contents.response';
 import { ReadInterface } from './read.interface';
 
 export interface AdapterInterface extends ReadInterface {
-  write(path: string, contents: string, config?: any): Promise<any>;
+  write(path: string, contents: string | Buffer, config?: any): Promise<any>;
 
   writeStream(path: string, resource: any, config?: any): Promise<any>;
 

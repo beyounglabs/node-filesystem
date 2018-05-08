@@ -3,8 +3,8 @@ import {
   copy,
   mkdirs,
   move,
-  readdir,
   readFile,
+  readdir,
   remove,
   stat,
   unlink,
@@ -14,7 +14,6 @@ import { merge } from 'lodash';
 import { paths } from 'node-dir';
 import { normalize } from 'path';
 import * as rtrim from 'rtrim';
-
 import { AdapterInterface } from '../adapter.interface';
 import { ListContentsResponse } from '../response/list.contents.response';
 import { UtilHelper } from '../util.helper';
@@ -55,7 +54,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
   ): Promise<ListContentsResponse[]> {
     const location = this.applyPathPrefix(directory);
 
-    if (!await this.isDir(location)!) {
+    if (!(await this.isDir(location)!)) {
       return [];
     }
 
@@ -119,7 +118,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
 
   public async write(
     path: string,
-    contents: string,
+    contents: string | Buffer,
     config: any = {},
   ): Promise<any> {
     const location = this.applyPathPrefix(path);
@@ -131,6 +130,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
 
     await this.ensureDirectory(this.getDirname(location));
     await writeFile(location, contents, options);
+
     const result: any = {
       contents,
       type: 'file',
@@ -272,7 +272,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
 
   public async deleteDir(path: string): Promise<boolean> {
     const location: string = this.applyPathPrefix(path);
-    if (!await this.isDir(location)) {
+    if (!(await this.isDir(location))) {
       return false;
     }
 
@@ -345,7 +345,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
 
     await mkdirs(root, this.permissionMap['dir']['public']);
 
-    if (!await this.isDir(root)) {
+    if (!(await this.isDir(root))) {
       throw new Error(`Impossible to create the root directory "${root}".`);
     }
   }

@@ -150,7 +150,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
 
   public async write(
     path: string,
-    contents: string,
+    contents: string | Buffer,
     config: any = {},
   ): Promise<any> {
     return await this.upload(path, contents, config);
@@ -158,7 +158,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
 
   protected async upload(
     path: string,
-    contents: string,
+    contents: string | Buffer,
     config: any = {},
   ): Promise<any> {
     const key = this.applyPathPrefix(path);
@@ -168,7 +168,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
 
     const s3Params = {
       ...{
-        Body: Buffer.from(contents),
+        Body: Buffer.isBuffer(contents) ? contents : Buffer.from(contents),
         Key: key,
         Bucket: this.getBucket(),
         ContentLength: Buffer.byteLength(contents),
@@ -365,7 +365,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
   }
 
   public async rename(path: string, newpath: string): Promise<boolean> {
-    if (!await this.copy(path, newpath)) {
+    if (!(await this.copy(path, newpath))) {
       return false;
     }
 
