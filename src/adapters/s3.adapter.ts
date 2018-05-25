@@ -1,5 +1,6 @@
 import * as AWS from 'aws-sdk';
 import * as ltrim from 'ltrim';
+import * as mime from 'mime';
 import * as rtrim from 'rtrim';
 import { createClient } from 's3';
 import { AdapterInterface } from '../adapter.interface';
@@ -172,7 +173,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
         Key: key,
         Bucket: this.getBucket(),
         ContentLength: Buffer.byteLength(contents),
-        ContentType: 'application/octet-stream',
+        ContentType: mime.getType(path) || 'application/octet-stream',
         ACL: acl,
       },
       ...options,
