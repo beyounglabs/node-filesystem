@@ -9,7 +9,8 @@ import { UtilHelper } from '../util.helper';
 import { AbstractAdapter } from './abstract.adapter';
 
 export class S3Adapter extends AbstractAdapter implements AdapterInterface {
-  public readonly PUBLIC_GRANT_URI = 'http://acs.amazonaws.com/groups/global/AllUsers';
+  public readonly PUBLIC_GRANT_URI =
+    'http://acs.amazonaws.com/groups/global/AllUsers';
 
   protected client: AWS.S3;
 
@@ -128,12 +129,10 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
           reject(err);
         } else {
           data.Contents.forEach(element => {
-            const listContentsResponse: ListContentsResponse = new ListContentsResponse();
             response.push(this.normalizeResponse(element, ''));
           });
 
           data.CommonPrefixes.forEach(element => {
-            const listContentsResponse: ListContentsResponse = new ListContentsResponse();
             response.push(this.normalizeResponse(element, ''));
           });
 
