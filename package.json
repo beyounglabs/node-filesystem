@@ -1,6 +1,6 @@
 {
   "name": "node-filesystem",
-  "version": "0.0.11",
+  "version": "0.0.13",
   "description": "A node filesystem manager",
   "main": "index.js",
   "repository": "git@github.com:beautybrands/node-filesystem.git",
@@ -25,6 +25,7 @@
     "coverage": "cd coverage && python -m SimpleHTTPServer 8182"
   },
   "dependencies": {
+    "@google-cloud/storage": "^1.7.0",
     "aws-sdk": "^2.166.0",
     "fs-extra": "^4.0.3",
     "lodash": "^4.17.4",
@@ -48,7 +49,7 @@
     "tsconfig-paths": "^2.4.0",
     "tslint": "^5.8.0",
     "tslint-config-airbnb": "^5.4.2",
-    "typescript": "^2.6.1"
+    "typescript": "^3.0.0"
   },
   "nyc": {
     "include": [

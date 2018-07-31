@@ -35,3 +35,4 @@ docker/data
 dist/
 __tests__/*/data
 env.js
+gcp-credentials.json

@@ -8,9 +8,9 @@ It's made with Typescript. All methods are async.
 
 ## Goals
 
-* Have a generic API for handling common tasks across multiple file storage engines.
-* Have consistent output which you can rely on.
-* Emulate directories in systems that support none, like AwsS3.
+- Have a generic API for handling common tasks across multiple file storage engines.
+- Have consistent output which you can rely on.
+- Emulate directories in systems that support none, like AwsS3.
 
 ## Installation
 
@@ -197,6 +197,22 @@ const s3Client = new AWS.S3({
 });
 
 new S3Adapter(s3Client, 'my-bucket', 'my-subfolder');
+```
+
+### Google Cloud Storage
+
+```typescript
+import * as Storage from '@google-cloud/storage';
+import { GoogleStorage } from 'node-filesystem';
+
+const googleStorageClient = new Storage({
+  projectId: '',
+});
+
+process.env.GOOGLE_APPLICATION_CREDENTIALS =
+  __dirname + '/../gcp-credentials.json';
+
+new GoogleStorage(googleStorageClient, 'my-bucket', 'my-subfolder');
 ```
 
 ### DigitalOcean Spaces
