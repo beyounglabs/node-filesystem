@@ -156,8 +156,13 @@ export class GoogleStorageAdapter extends AbstractAdapter
       .bucket(this.getBucket())
       .file(key);
 
+    const contentType = mime.getType(path) || 'application/octet-stream';
+
     await remoteFile.save(
       Buffer.isBuffer(contents) ? contents : Buffer.from(contents),
+      {
+        contentType,
+      },
     );
 
     return this.normalizeResponse(
@@ -165,7 +170,7 @@ export class GoogleStorageAdapter extends AbstractAdapter
         body: contents,
         size: Buffer.byteLength(contents),
         acl,
-        contentType: mime.getType(path) || 'application/octet-stream',
+        contentType,
       },
       path,
     );

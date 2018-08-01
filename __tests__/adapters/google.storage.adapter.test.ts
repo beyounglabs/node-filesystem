@@ -3,7 +3,7 @@ import * as env from '../../env';
 import * as Storage from '@google-cloud/storage';
 import { GoogleStorageAdapter } from '../../src/adapters/google.storage.adapter';
 
-describe.only('GoogleStorageAdapterTest', function() {
+describe('GoogleStorageAdapterTest', function() {
   this.timeout(10000);
 
   const googleStorageClient = new Storage({
