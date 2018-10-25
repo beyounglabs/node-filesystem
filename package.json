@@ -1,6 +1,6 @@
 {
   "name": "node-filesystem",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "A node filesystem manager",
   "main": "index.js",
   "repository": "git@github.com:beautybrands/node-filesystem.git",
