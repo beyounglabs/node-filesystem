@@ -150,7 +150,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     const location = this.applyPathPrefix(path);
     let contents = '';
     try {
-      contents = await readFile(location, 'utf8');
+      contents = await readFile(location);
     } catch (e) {
       return false;
     }
