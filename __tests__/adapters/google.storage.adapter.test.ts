@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as env from '../../env';
-import * as Storage from '@google-cloud/storage';
+import { Storage } from '@google-cloud/storage';
 import { GoogleStorageAdapter } from '../../src/adapters/google.storage.adapter';
 
 describe('GoogleStorageAdapterTest', function() {

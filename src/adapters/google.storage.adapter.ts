@@ -112,11 +112,13 @@ export class GoogleStorageAdapter extends AbstractAdapter
       .getFiles(storageParams);
 
     const response: ListContentsResponse[] = [];
+
     for (const file of files[0]) {
       response.push(this.normalizeResponse({ ...file, ...file.metadata }, ''));
     }
 
-    const prefixes = files[2].prefixes;
+    // @ts-ignore
+    const prefixes = files && files[2] ? files[2].prefixes : undefined;
     if (prefixes) {
       for (const prefix of prefixes) {
         response.push(this.normalizeResponse({ prefix }, ''));
