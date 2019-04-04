@@ -1,7 +1,7 @@
 import * as ltrim from 'ltrim';
 import * as mime from 'mime';
 import * as rtrim from 'rtrim';
-import * as Storage from '@google-cloud/storage';
+import { Storage } from '@google-cloud/storage';
 import { AdapterInterface } from '../adapter.interface';
 import { ListContentsResponse } from '../response/list.contents.response';
 import { UtilHelper } from '../util.helper';
