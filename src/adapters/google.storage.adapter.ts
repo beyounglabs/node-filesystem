@@ -66,6 +66,10 @@ export class GoogleStorageAdapter extends AbstractAdapter
       );
     }
 
+    if (Array.isArray(response.body)) {
+      response.body = response.body[0];
+    }
+
     if (result.path.substr(-1) === '/') {
       result.type = 'dir';
       result.path = rtrim(result.path, '/');
