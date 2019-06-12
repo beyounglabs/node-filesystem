@@ -2,7 +2,7 @@ import * as AWS from 'aws-sdk';
 import * as ltrim from 'ltrim';
 import * as mime from 'mime';
 import * as rtrim from 'rtrim';
-import { createClient } from 's3';
+import { createClient } from 's3-client';
 import { AdapterInterface } from '../adapter.interface';
 import { ListContentsResponse } from '../response/list.contents.response';
 import { UtilHelper } from '../util.helper';
