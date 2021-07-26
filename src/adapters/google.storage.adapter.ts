@@ -7,8 +7,10 @@ import { ListContentsResponse } from '../response/list.contents.response';
 import { UtilHelper } from '../util.helper';
 import { AbstractAdapter } from './abstract.adapter';
 
-export class GoogleStorageAdapter extends AbstractAdapter
-  implements AdapterInterface {
+export class GoogleStorageAdapter
+  extends AbstractAdapter
+  implements AdapterInterface
+{
   protected client: Storage;
 
   protected bucket: string;
@@ -97,7 +99,10 @@ export class GoogleStorageAdapter extends AbstractAdapter
     directory: string,
     recursive: boolean = false,
   ): Promise<ListContentsResponse[]> {
-    const prefix = this.applyPathPrefix(rtrim(directory, '/') + '/');
+    const prefix = this.applyPathPrefix(
+      directory == '/' ? '' : rtrim(directory, '/') + '/',
+    );
+
     const storageParams: any = {
       prefix,
       autoPaginate: false,
@@ -126,7 +131,7 @@ export class GoogleStorageAdapter extends AbstractAdapter
     }
 
     const responseEmulated = UtilHelper.emulateDirectories(response).filter(
-      item => {
+      (item) => {
         return rtrim(item.path, '/') !== rtrim(directory, '/');
       },
     );
@@ -154,9 +159,7 @@ export class GoogleStorageAdapter extends AbstractAdapter
     // @todo Veridy this (S3)
     const acl = options['ACL'] ? options['ACL'] : 'private';
 
-    const remoteFile = this.getClient()
-      .bucket(this.getBucket())
-      .file(key);
+    const remoteFile = this.getClient().bucket(this.getBucket()).file(key);
 
     const contentType = mime.getType(path) || 'application/octet-stream';
 
@@ -181,9 +184,7 @@ export class GoogleStorageAdapter extends AbstractAdapter
   public async read(path: string): Promise<any | false> {
     const key = this.applyPathPrefix(path);
 
-    const remoteFile = this.getClient()
-      .bucket(this.getBucket())
-      .file(key);
+    const remoteFile = this.getClient().bucket(this.getBucket()).file(key);
 
     const body = await remoteFile.download();
 
@@ -202,9 +203,7 @@ export class GoogleStorageAdapter extends AbstractAdapter
     const key = this.applyPathPrefix(path);
 
     try {
-      const remoteFile = this.getClient()
-        .bucket(this.getBucket())
-        .file(key);
+      const remoteFile = this.getClient().bucket(this.getBucket()).file(key);
 
       await remoteFile.delete();
       return true;
@@ -216,9 +215,7 @@ export class GoogleStorageAdapter extends AbstractAdapter
   public async has(path: string): Promise<boolean> {
     const key = this.applyPathPrefix(path);
     try {
-      const remoteFile = this.getClient()
-        .bucket(this.getBucket())
-        .file(key);
+      const remoteFile = this.getClient().bucket(this.getBucket()).file(key);
 
       await remoteFile.getMetadata();
       return true;
@@ -234,9 +231,7 @@ export class GoogleStorageAdapter extends AbstractAdapter
   public async getMetadata(path: string): Promise<any> {
     const key = this.applyPathPrefix(path);
 
-    const remoteFile = this.getClient()
-      .bucket(this.getBucket())
-      .file(key);
+    const remoteFile = this.getClient().bucket(this.getBucket()).file(key);
 
     const data = await remoteFile.get();
 
