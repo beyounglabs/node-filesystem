@@ -1,6 +1,6 @@
 {
   "name": "node-filesystem",
-  "version": "0.0.21",
+  "version": "1.0.0",
   "description": "A node filesystem manager",
   "main": "index.js",
   "repository": "git@github.com:beautybrands/node-filesystem.git",
@@ -14,7 +14,7 @@
     "flysystem"
   ],
   "engines": {
-    "node": ">=8.0"
+    "node": ">=14.0"
   },
   "scripts": {
     "build": "tsc",
@@ -25,31 +25,29 @@
     "coverage": "cd coverage && python -m SimpleHTTPServer 8182"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.131.0",
     "@google-cloud/storage": "^2.4.3",
-    "aws-sdk": "^2.166.0",
     "fs-extra": "^4.0.3",
     "lodash": "^4.17.21",
     "ltrim": "^1.0.0",
     "mime": "^2.3.1",
     "node-dir": "^0.1.17",
-    "rtrim": "^1.0.0",
-    "s3-client": "^4.4.0"
+    "rtrim": "^1.0.0"
   },
   "devDependencies": {
-    "@types/bull": "^3.3.0",
     "@types/chai": "^4.0.5",
+    "@types/lodash": "^4.14.182",
     "@types/mocha": "^2.2.44",
-    "@types/node": "^8.0.53",
+    "@types/node": "^14.18.22",
     "chai": "^4.2.0",
     "mocha": "^6.0.2",
     "nodemon": "^1.12.1",
     "nyc": "^11.3.0",
-    "reflect-metadata": "^0.1.10",
-    "ts-node": "^3.3.0",
+    "ts-node": "^10.9.1",
     "tsconfig-paths": "^2.4.0",
     "tslint": "^5.8.0",
     "tslint-config-airbnb": "^5.4.2",
-    "typescript": "^3.4.0"
+    "typescript": "^4.7.4"
   },
   "nyc": {
     "include": [
