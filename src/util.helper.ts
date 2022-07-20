@@ -25,7 +25,7 @@ export class UtilHelper {
   public static map(object: any = {}, map: any = {}) {
     const result = {};
 
-    Object.keys(map).forEach(from => {
+    Object.keys(map).forEach((from) => {
       const to = map[from];
       if (!object[from]) {
         return;
@@ -48,10 +48,10 @@ export class UtilHelper {
   }
 
   public static emulateDirectories(listing: any[] = []) {
-    let directories = [];
+    let directories: any[] = [];
     let listedDirectories = {};
 
-    listing.forEach(object => {
+    listing.forEach((object) => {
       const emulatedDirecotires = UtilHelper.emulateObjectDirectories(
         object,
         directories,
@@ -67,7 +67,7 @@ export class UtilHelper {
       uniq(Object.keys(listedDirectories)),
     );
 
-    directories.forEach(directory => {
+    directories.forEach((directory) => {
       listing.push({ ...UtilHelper.pathinfo(directory), ...{ type: 'dir' } });
     });
 

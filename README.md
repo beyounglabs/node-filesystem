@@ -180,19 +180,21 @@ new LocalAdapter('my-root-folder', 'my-subfolder');
 
 ### Aws S3
 
-You need install the oficial AWS SDK:
+You need install the oficial AWS SDK S3:
 
 ```
-yarn add aws-sdk
+yarn add @aws-sdk/client-s3
 ```
 
 ```typescript
-import * as AWS from 'aws-sdk';
+import { S3 } from '@aws-sdk/client-s3';
 import { S3Adapter } from 'node-filesystem';
 
-const s3Client = new AWS.S3({
-  accessKeyId: 'my-aws-access-key',
-  secretAccessKey: 'my-aws-secret-key',
+// Set the credentials env variables on .env
+// AWS_ACCESS_KEY_ID=XXX
+// AWS_SECRET_ACCESS_KEY=XXX
+
+const s3Client = new S3({
   region: 'my-aws-region',
 });
 
@@ -216,5 +218,9 @@ new GoogleStorage(googleStorageClient, 'my-bucket', 'my-subfolder');
 ```
 
 ### DigitalOcean Spaces
+
+You can use the AWS S3 Adapter
+
+### Cloudflare R2
 
 You can use the AWS S3 Adapter

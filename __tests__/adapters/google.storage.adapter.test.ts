@@ -1,13 +1,15 @@
 import { expect } from 'chai';
-import * as env from '../../env';
 import { Storage } from '@google-cloud/storage';
 import { GoogleStorageAdapter } from '../../src/adapters/google.storage.adapter';
+import { config as dotEnvConfig } from 'dotenv';
 
-describe('GoogleStorageAdapterTest', function() {
+dotEnvConfig();
+
+describe('GoogleStorageAdapterTest', function () {
   this.timeout(10000);
 
   const googleStorageClient = new Storage({
-    projectId: env.google_cloud_storage_project_id,
+    projectId: process.env.GOOGLE_CLOUD_STORAGE_PROJECT_ID,
   });
 
   if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
@@ -17,7 +19,7 @@ describe('GoogleStorageAdapterTest', function() {
 
   const adapter = new GoogleStorageAdapter(
     googleStorageClient,
-    env.google_cloud_storage_bucket,
+    process.env.GOOGLE_CLOUD_STORAGE_BUCKET!,
     'unittest',
   );
 

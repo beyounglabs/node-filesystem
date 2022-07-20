@@ -1,18 +1,27 @@
 import { expect } from 'chai';
-import * as AWS from 'aws-sdk';
-import * as env from '../../env';
+import { S3 } from '@aws-sdk/client-s3';
 import { S3Adapter } from '../../src/adapters/s3.adapter';
+import { config as dotEnvConfig } from 'dotenv';
 
-describe('S3AdapterTest', function() {
+dotEnvConfig();
+
+describe('S3AdapterTest', function () {
   this.timeout(10000);
 
-  const s3Client = new AWS.S3({
-    accessKeyId: env.aws_access_key_id,
-    secretAccessKey: env.aws_secret_access_key,
-    region: env.aws_region,
+  const s3Client = new S3({
+    region: process.env.AWS_REGION,
+    endpoint: process.env.AWS_S3_ENDPOINT,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
   });
 
-  const adapter = new S3Adapter(s3Client, env.aws_s3_bucket, 'unittest');
+  const adapter = new S3Adapter(
+    s3Client,
+    process.env.AWS_S3_BUCKET!,
+    'unittest',
+  );
 
   describe('files', () => {
     it('write', async () => {
