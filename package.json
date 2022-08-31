@@ -27,7 +27,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.131.0",
     "@google-cloud/storage": "^6.4.1",
-    "aws-sdk": "^2.166.0",
     "fs-extra": "^4.0.3",
     "lodash": "^4.17.21",
     "ltrim": "^1.0.0",
