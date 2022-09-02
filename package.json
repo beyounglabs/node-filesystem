@@ -1,6 +1,6 @@
 {
   "name": "node-filesystem",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.0",
   "description": "A node filesystem manager",
   "main": "index.js",
   "repository": "git@github.com:beautybrands/node-filesystem.git",
@@ -21,7 +21,7 @@
     "test": "nyc mocha -A --opts ./mocha.opts --require ts-node/register -r tsconfig-paths/register",
     "test:clear": "clear &&  yarn test",
     "test:watch": "nodemon --exec yarn test:clear",
-    "npm:publish": "yarn build && cp package.json dist/ && cd dist/ && npm publish",
+    "npm:publish": "yarn build && cp package.json dist/ && cd dist/ && npm publish --tag beta",
     "coverage": "cd coverage && python -m SimpleHTTPServer 8182"
   },
   "dependencies": {
