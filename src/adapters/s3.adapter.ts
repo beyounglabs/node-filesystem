@@ -255,7 +255,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
 
   public async write(
     path: string,
-    contents: string | Buffer,
+    contents: string | Buffer | Uint8Array,
     config: any = {},
   ): Promise<any> {
     return await this.upload(path, contents, config);
@@ -263,7 +263,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
 
   protected async upload(
     path: string,
-    contents: string | Buffer,
+    contents: string | Buffer | Uint8Array,
     config: any = {},
   ): Promise<any> {
     const key = this.applyPathPrefix(path);
@@ -271,12 +271,24 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
 
     const acl = options['ACL'] ? options['ACL'] : 'private';
 
+    let Body = contents;
+    let ContentLength = 0;
+    if (typeof Buffer !== 'undefined') {
+      Body = Buffer.isBuffer(contents) ? contents : Buffer.from(contents);
+      ContentLength = Buffer.byteLength(contents);
+    } else if (typeof contents === 'string') {
+      // convert to Uint8Array
+      // Cloudflare Workers do not support Buffer
+      Body = new TextEncoder().encode(contents);
+      ContentLength = Body.byteLength;
+    }
+
     const s3Params: PutObjectCommandInput = {
       ...{
-        Body: Buffer.isBuffer(contents) ? contents : Buffer.from(contents),
+        Body,
+        ContentLength,
         Key: key,
         Bucket: this.getBucket(),
-        ContentLength: Buffer.byteLength(contents),
         ContentType: mime.getType(path) || 'application/octet-stream',
         ACL: acl,
       },
