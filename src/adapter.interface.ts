@@ -1,11 +1,19 @@
 import { ReadInterface } from './read.interface';
 
 export interface AdapterInterface extends ReadInterface {
-  write(path: string, contents: string | Buffer, config?: any): Promise<any>;
+  write(
+    path: string,
+    contents: string | Buffer | Uint8Array,
+    config?: any,
+  ): Promise<any>;
 
   writeStream(path: string, resource: any, config?: any): Promise<any>;
 
-  update(path: string, contents: string, config?: any): Promise<any>;
+  update(
+    path: string,
+    contents: string | Buffer | Uint8Array,
+    config?: any,
+  ): Promise<any>;
 
   updateStream(path: string, resource: any, config?: any): Promise<any>;
 

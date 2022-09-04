@@ -1,18 +1,15 @@
+import { copy, mkdirs, move, remove } from 'fs-extra';
+import { merge } from 'lodash';
+import { paths } from 'node-dir';
 import {
   chmod,
-  copy,
-  mkdirs,
-  move,
-  readFile,
   readdir,
-  remove,
+  readFile,
   stat,
   unlink,
   writeFile,
-} from 'fs-extra';
-import { merge } from 'lodash';
-import { paths } from 'node-dir';
-import { normalize } from 'path';
+} from 'node:fs/promises';
+import { normalize } from 'node:path';
 import * as rtrim from 'rtrim';
 import { AdapterInterface } from '../adapter.interface';
 import { ListContentsResponse } from '../response/list.contents.response';
@@ -61,11 +58,11 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     let files: any[] = [];
     if (!recursive) {
       files = await readdir(location, 'utf8');
-      files = files.map(file => {
+      files = files.map((file) => {
         return location + file;
       });
     } else {
-      files = await new Promise<any[]>(done => {
+      files = await new Promise<any[]>((done) => {
         paths(location, (err, paths) => {
           const fileList: string[] = [];
           for (const file of paths.files) {
@@ -118,7 +115,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
 
   public async write(
     path: string,
-    contents: string | Buffer,
+    contents: string | Buffer | Uint8Array,
     config: any = {},
   ): Promise<any> {
     const location = this.applyPathPrefix(path);
@@ -131,10 +128,24 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
     await this.ensureDirectory(this.getDirname(location));
     await writeFile(location, contents, options);
 
+    let contentLength = 0;
+    if (typeof Buffer !== 'undefined') {
+      contentLength = Buffer.byteLength(contents);
+    } else if (typeof contents === 'string') {
+      // convert to Uint8Array
+      // Cloudflare Workers do not support Buffer
+      const body = new TextEncoder().encode(contents);
+      contentLength = body.byteLength;
+    }
+
+    if (contents instanceof Uint8Array) {
+      contentLength = contents.byteLength;
+    }
+
     const result: any = {
       contents,
       type: 'file',
-      size: Buffer.byteLength(contents),
+      size: contentLength,
       path,
       visibility: 'public',
     };
@@ -148,7 +159,7 @@ export class LocalAdapter extends AbstractAdapter implements AdapterInterface {
 
   public async read(path: string): Promise<any | false> {
     const location = this.applyPathPrefix(path);
-    let contents = '';
+    let contents: string | Buffer = '';
     try {
       contents = await readFile(location);
     } catch (e) {

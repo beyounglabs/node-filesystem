@@ -141,7 +141,7 @@ export class GoogleStorageAdapter
 
   public async write(
     path: string,
-    contents: string | Buffer,
+    contents: string | Buffer | Uint8Array,
     config: any = {},
   ): Promise<any> {
     return await this.upload(path, contents, config);
@@ -149,7 +149,7 @@ export class GoogleStorageAdapter
 
   protected async upload(
     path: string,
-    contents: string | Buffer,
+    contents: string | Buffer | Uint8Array,
     config: any = {},
   ): Promise<any> {
     const key = this.applyPathPrefix(path);
@@ -163,17 +163,26 @@ export class GoogleStorageAdapter
 
     const contentType = mime.getType(path) || 'application/octet-stream';
 
-    await remoteFile.save(
-      Buffer.isBuffer(contents) ? contents : Buffer.from(contents),
-      {
-        contentType,
-      },
-    );
+    let body = contents;
+    let contentLength = 0;
+    if (typeof Buffer !== 'undefined') {
+      body = Buffer.isBuffer(contents) ? contents : Buffer.from(contents);
+      contentLength = Buffer.byteLength(contents);
+    } else if (typeof contents === 'string') {
+      // convert to Uint8Array
+      // Cloudflare Workers do not support Buffer
+      body = new TextEncoder().encode(contents);
+      contentLength = body.byteLength;
+    }
+
+    await remoteFile.save(body as Buffer, {
+      contentType,
+    });
 
     return this.normalizeResponse(
       {
         body: contents,
-        size: Buffer.byteLength(contents),
+        size: contentLength,
         acl,
         contentType,
       },

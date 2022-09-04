@@ -280,6 +280,9 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
       // convert to Uint8Array
       // Cloudflare Workers do not support Buffer
       Body = new TextEncoder().encode(contents);
+    }
+
+    if (Body instanceof Uint8Array) {
       ContentLength = Body.byteLength;
     }
 
