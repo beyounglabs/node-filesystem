@@ -132,9 +132,9 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
     return {
       ...result,
       ...UtilHelper.map(response, this.resultMap),
-      contents: Buffer.from(
-        await sdkStreamMixin(response.Body).transformToByteArray(),
-      ),
+      contents: response.Body
+        ? Buffer.from(await response.Body.transformToByteArray())
+        : null,
     };
   }
 
