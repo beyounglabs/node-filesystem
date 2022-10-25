@@ -14,6 +14,7 @@ import { AdapterInterface } from '../adapter.interface';
 import { ListContentsResponse } from '../response/list.contents.response';
 import { UtilHelper } from '../util.helper';
 import { AbstractAdapter } from './abstract.adapter';
+import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
 
 interface Object extends S3Object {}
 
@@ -109,7 +110,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
     };
   }
 
-  protected normalizeResponseGet(
+  protected async normalizeResponseGet(
     response: GetObjectCommandOutput,
     path: string,
   ) {
@@ -131,6 +132,9 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
     return {
       ...result,
       ...UtilHelper.map(response, this.resultMap),
+      contents: Buffer.from(
+        await sdkStreamMixin(response.Body).transformToByteArray(),
+      ),
     };
   }
 
@@ -316,7 +320,7 @@ export class S3Adapter extends AbstractAdapter implements AdapterInterface {
 
     const response = await this.getClient().getObject(s3Params);
 
-    return this.normalizeResponseGet(response, path);
+    return await this.normalizeResponseGet(response, path);
   }
 
   public async delete(path: string): Promise<boolean> {
